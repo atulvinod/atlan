@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 
 import static java.lang.Thread.sleep;
@@ -27,6 +28,8 @@ public class taskService {
         public void run() {
             System.out.println("CheckLoad running");
 
+            // Keeps checking if the job queue has new tasks , if the job queue has tasks and the concurrent thread
+            // count is less than max, then that task can be executed.
             while(true) {
 
                 while (queue.size() > 0) {
@@ -53,9 +56,10 @@ public class taskService {
     public String executeAsynchronously(MultipartFile file) {
         task t = new task(file,map);
 
+        // if the concurrent thread count has reached max, then push that into the queue.
         if(map.size()>concurrentTaskCount){
             queue.add(t);
-            return "Queued"+t.getId();
+            return "Queued : " +t.getId();
 
         }
         t.start();
@@ -97,5 +101,14 @@ public class taskService {
             return "No task exists";
         }
 
+   }
+   public String checkIfTaskIsQueuedOrRunning(long id){
+        if(map.containsKey(id)){
+            return "Your task is running";
+        }
+       if(queue.stream().filter(e->e.getId()==id).collect(Collectors.toList()).size()>0){
+           return "Your task is queue";
+       }
+       return "Invalid task id or the task has been completed";
    }
 }

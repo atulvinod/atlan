@@ -17,19 +17,29 @@ public class controller {
 
     }
 
+    // Endpoint to pause
     @RequestMapping("/pause")
     public String pause(@RequestParam("id") long id){
        return tService.pauseThread(id);
     }
 
+    //Endpoint to resume
     @RequestMapping(value="/resume")
     public String resume(@RequestParam("id") long id){
      return   tService.resumeThread(id);
     }
 
+
+    //Endpoint to shutdown
     @RequestMapping(value="/shutdown")
     public String shutdown(@RequestParam("id") long id){
        return tService.destroyThread(id);
+    }
+
+    //Checkpoint to check task status
+    @RequestMapping(value="/check_task_status")
+    public String checktast(@RequestParam("id") long id){
+        return tService.checkIfTaskIsQueuedOrRunning(id);
     }
 
 }
