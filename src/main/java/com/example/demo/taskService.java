@@ -20,22 +20,27 @@ public class taskService {
         checkLoad.start();
     }
 
+    // A seperate thread to manage concurrent threads
     Runnable r = new Runnable() {
 
         @Override
         public void run() {
             System.out.println("CheckLoad running");
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            while (queue.size()>0){
-                if(map.size()<concurrentTaskCount){
-                    System.out.println("Task from Queue");
-                    Thread t = queue.poll();
-                    map.put(t.getId(),t);
-                    t.start();
+
+            while(true) {
+
+                while (queue.size() > 0) {
+                    if (map.size() < concurrentTaskCount) {
+                        System.out.println("Task from Queue");
+                        Thread t = queue.poll();
+                        map.put(t.getId(), t);
+                        t.start();
+                    }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
